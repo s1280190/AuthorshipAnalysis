@@ -18,8 +18,8 @@ nltk.download('punkt') #分かち書きの機能をダウンロード
 ##nltk.download('all') #すべての機能をダウンロード
 
 urls = [
-    'file://' + os.path.abspath('/Users/tatsuyatsuji/Downloads/作業/Ghahramani-2015-Nature.txt'),
-    'file://' + os.path.abspath('/Users/tatsuyatsuji/Downloads/作業/2009.11087.txt')
+    'file://' + os.path.abspath('/Ghahramani-2015-Nature.txt'),
+    'file://' + os.path.abspath('/2009.11087.txt')
 ]  
 texts = []
 freqdists = []
