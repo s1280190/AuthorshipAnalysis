@@ -18,8 +18,8 @@ nltk.download('punkt') #分かち書きの機能をダウンロード
 ##nltk.download('all') #すべての機能をダウンロード
 
 urls = [
-    'file://' + os.path.abspath('/Ghahramani-2015-Nature.txt'),
-    'file://' + os.path.abspath('/2009.11087.txt')
+    'file://' + os.path.abspath('/Ghahramani-2015-Nature.txt'), #Enter your path
+    'file://' + os.path.abspath('/2009.11087.txt') #Enter your path
 ]  
 texts = []
 freqdists = []
@@ -46,7 +46,15 @@ for i in range(len(freqdists)):
 
 avg_error = sum(errors) / len(errors)
 
+#To print the result
 if avg_error < 100:
     print("These authors have similar writing styles.")
 else:
     print("These authors have distinct writing styles.")
+
+#To output the result as a text file
+#with open('result.txt', 'w') as f:
+#    if avg_error < 100:
+#        f.write("These authors have similar writing styles.")
+#    else:
+#        f.write("These authors have distinct writing styles.")
