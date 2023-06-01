@@ -96,3 +96,63 @@ for file in files2:
     if file.endswith(".txt"):
         file_path = os.path.join(folder_path2, file)
         Type_rate(file_path)
+
+
+################## VERB ANALYSIS ##################
+
+future_vocabs1 = ['tomorrow', 'weekend']
+future_vocabs2 = ['next', 'week', 'month', 'year']
+
+def verb_pre(text, counts):
+  sents = nltk.sent_tokenize(text)             ## tokenize input_text as sentences
+  verb_analysis(sents, counts)
+  print("Number of VBG in future sentence: ", counts[0])
+  print("arranged future: ", counts[1])
+  print("planned future:  ", counts[2])
+  return counts
+
+def verb_analysis(sents, counts):
+  for s in sents:
+    tokens = nltk.word_tokenize(s)             ## tokenize sentence as words
+    tagged_tokens = nltk.pos_tag(tokens)       ## POS tagging
+    if(judge_future(tokens)) == True:          ## if the sentence is future tense
+      for n in range(len(tokens)-1):
+        if(tagged_tokens[n][1]=='VBG'):        ## if "**ing"
+          counts[0] += 1
+          if(tokens[n] == 'going') and (tokens[n+1] == 'to'):
+            if(tagged_tokens[n+2][1] == 'VB'): ## if "going to" + verb
+              counts[1] += 1
+              #print('"' + s + '"' + ' is arranged future.')
+            else:                              ## if "going to" + noun, "going to" + "the" + noun, etc.(except verb)
+              counts[2] += 1
+              #print('"' + s + '"' + ' is planned future.')
+          else:                                ## if "**ing" except "going to"
+            counts[2] += 1
+            #print('"' + s + '"' + ' is planned future.')
+  return counts
+
+def judge_future(tokens):                      ## the sentence is future tense or not
+  for w in future_vocabs1:                     ## judge the sentence includes "tomorrow" or "weekend" or not
+    if(w in tokens):
+      return True
+
+  if(not(len(set(tokens) & set(future_vocabs2)) < 2)): ## judge the sentence includes "next week", "next month", or "next year" or not
+    return True
+
+def verb(files, folder_path):
+  for file in files:
+      if file.endswith(".txt"):
+          counts = [0, 0, 0]
+          file_path = os.path.join(folder_path, file)
+          f = open(file_path,'r')
+          input_text = f.read()
+
+          print("-------" + file_path + "------")
+          counts = verb_pre(input_text, counts)
+          print()
+
+print()
+verb(files, folder_path)
+verb(files2, folder_path2)
+
+################ VERB ANALYSIS END ################
