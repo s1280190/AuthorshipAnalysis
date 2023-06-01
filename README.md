@@ -1,3 +1,0 @@
-# AuthorshipAnalysis
-
-Trello team J
