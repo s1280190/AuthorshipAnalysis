@@ -49,3 +49,5 @@ def judge_future(tokens):                      ## the sentence is future tense o
 
   if(not(len(set(tokens) & set(future_vocabs2)) < 2)): ## judge the sentence includes "next week", "next month", or "next year" or not
     return True
+
+  counts = verb(input_text, counts)
