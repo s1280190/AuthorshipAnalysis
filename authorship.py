@@ -106,9 +106,9 @@ future_vocabs2 = ['next', 'week', 'month', 'year']
 def verb_pre(text, counts):
   sents = nltk.sent_tokenize(text)             ## tokenize input_text as sentences
   verb_analysis(sents, counts)
-  print("Number of VBG in future sentence: ", counts[0])
-  print("arranged future: ", counts[1])
-  print("planned future:  ", counts[2])
+  #print("Number of VBG in future sentence: ", counts[0])
+  #print("arranged future: ", counts[1])
+  #print("planned future:  ", counts[2])
   return counts
 
 def verb_analysis(sents, counts):
@@ -139,21 +139,64 @@ def judge_future(tokens):                      ## the sentence is future tense o
   if(not(len(set(tokens) & set(future_vocabs2)) < 2)): ## judge the sentence includes "next week", "next month", or "next year" or not
     return True
 
-def verb(files, folder_path):
+def verb(files, folder_path, counts):
+  i = 0
   for file in files:
       if file.endswith(".txt"):
-          counts = [0, 0, 0]
           file_path = os.path.join(folder_path, file)
           f = open(file_path,'r')
           input_text = f.read()
 
-          print("-------" + file_path + "------")
-          counts = verb_pre(input_text, counts)
-          print()
+          #print("-------" + file_path + "------")
+          counts[i][0] = file_path
+          counts[i][1:4] = verb_pre(input_text, counts[i][1:4])
+          #print()
+          i += 1
+  return counts
 
 print()
-verb(files, folder_path)
-verb(files2, folder_path2)
+n_Files = sum(file.endswith(".txt") for file in files)
+n_Files2 = sum(file.endswith(".txt") for file in files2)
+counts = [ ["", 0, 0, 0] for i in range(n_Files) ]      ## [file number][File name, number of VBG, number of arranged future, number of planned future]
+counts2 = [ ["", 0, 0, 0] for i in range(n_Files2) ]
+
+counts = verb(files, folder_path, counts)
+counts2 = verb(files2, folder_path2, counts2)
+  
+
+for i in range(n_Files2):                               ## analyse the similarity of using VBG of two texts
+  vec_counts2 = np.array(counts2[i][1:4])
+  if not(np.linalg.norm(vec_counts2) == 0):
+    close_v_similarity_files = []
+    far_v_similarity_files = []
+    for j in range(n_Files):
+      if not (counts[j][1] == 0):
+        vec_counts = np.array(counts[j][1:4])
+        if not(np.linalg.norm(vec_counts) * np.linalg.norm(vec_counts2) == 0):
+          similarity_v = np.dot(vec_counts, vec_counts2)/(np.linalg.norm(vec_counts) * np.linalg.norm(vec_counts2))     ## compute Cosine Similarity of 2 texts
+          if(similarity_v > 0.7): 
+            close_v_similarity_files.append(counts[j][0])
+          elif(similarity_v < -0.7):
+            far_v_similarity_files.append(counts[j][0])
+
+    if(close_v_similarity_files):
+      print("These files have close Cosine Similarity of using VBG with " + counts2[i][0])
+      for k in range(len(close_v_similarity_files)):
+        print(" " + close_v_similarity_files[k])
+      print()
+
+    if(far_v_similarity_files):
+      print("These files have far Cosine Similarity of using VBG with " + counts2[i][0])
+      for k in range(len(far_v_similarity_files)):
+        print(" " + far_v_similarity_files[k])
+      print()
+
+    if not(close_v_similarity_files) and not(far_v_similarity_files):
+      print("It couldn't analyse similarity of using VBG in future sentence")
+      print()
+  else:
+    print("Cosine Similarity of " + counts2[i][0] + " couldn't compute")
+    print()
 
 ################ VERB ANALYSIS END ################
 
