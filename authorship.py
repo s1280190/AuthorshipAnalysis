@@ -192,10 +192,10 @@ for i in range(n_Files2):                               ## analyse the similarit
       print()
 
     if not(close_v_similarity_files) and not(far_v_similarity_files):
-      print("It couldn't analyse similarity of using VBG in future sentence")
+      print("It couldn't analyse similarity of using VBG in future sentence of " + counts2[i][0] + " and other file")
       print()
   else:
-    print("Cosine Similarity of " + counts2[i][0] + " couldn't compute")
+    print("Cosine Similarity of VBG of " + counts2[i][0] + " and other file couldn't compute")
     print()
 
 ################ VERB ANALYSIS END ################
