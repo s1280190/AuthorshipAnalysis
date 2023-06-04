@@ -4,7 +4,8 @@ import requests
 import nltk
 from collections import Counter
 from nltk import pos_tag, word_tokenize
-from nltk.tokenize import word_tokenize
+from nltk.tokenize import word_tokenize¥
+import numpy as np
 
 
 folder_path = "DataSet"  # フォルダのパスを指定してください
