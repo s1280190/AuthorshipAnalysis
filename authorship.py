@@ -107,9 +107,6 @@ future_vocabs2 = ['next', 'week', 'month', 'year']
 def verb_pre(text, counts):
   sents = nltk.sent_tokenize(text)             ## tokenize input_text as sentences
   verb_analysis(sents, counts)
-  #print("Number of VBG in future sentence: ", counts[0])
-  #print("arranged future: ", counts[1])
-  #print("planned future:  ", counts[2])
   return counts
 
 def verb_analysis(sents, counts):
@@ -148,17 +145,24 @@ def verb(files, folder_path, counts):
           f = open(file_path,'r')
           input_text = f.read()
 
-          #print("-------" + file_path + "------")
           counts[i][0] = file_path
           counts[i][1:4] = verb_pre(input_text, counts[i][1:4])
-          #print()
+
+          if(counts[i][2] > 0):
+            print("-------" + file_path + "------")
+            print("Number of VBG in future sentence: ", counts[i][1])
+            print("arranged future: ", counts[i][2])
+            print("planned future:  ", counts[i][3])
+            print()
+
           i += 1
   return counts
 
 print()
 n_Files = sum(file.endswith(".txt") for file in files)
 n_Files2 = sum(file.endswith(".txt") for file in files2)
-counts = [ ["", 0, 0, 0] for i in range(n_Files) ]      ## [file number][File name, number of VBG, number of arranged future, number of planned future]
+counts = [ ["", 0, 0, 0] for i in range(n_Files) ]      
+## [file number][File name, number of VBG, number of arranged future, number of planned future]
 counts2 = [ ["", 0, 0, 0] for i in range(n_Files2) ]
 
 counts = verb(files, folder_path, counts)
