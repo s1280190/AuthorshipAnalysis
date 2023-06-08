@@ -205,29 +205,11 @@ for i in range(n_Files2):                               ## analyse the similarit
 
 ################ VERB ANALYSIS END ################
 
-import nltk
-import os
-import string
-import requests
-from collections import Counter
-from nltk import pos_tag, word_tokenize
-from nltk.tokenize import word_tokenize
-
-print('start')
-
-folder_path = "DataSet"  # フォルダのパスを指定してください
-folder_path2 = "Dataset2"  # 追加のデータセットフォルダのパスを指定してください
-# フォルダ内のファイルを取得
-files = os.listdir(folder_path)
-files2 = os.listdir(folder_path2)
-
-verb_counts = Counter()
-noun_counts = Counter()
-
-# 抽出する単語のリストを作成
-target_words = ["Adamas"]
-
 ################## ADJECTIVE ANALYSIS START ##################
+
+result = [] # dataset1の結果
+adamas_result = [] # dataset2の結果
+closest_file = [1000, 'non'] # 最も近い
 
 class AA_adjectives :
   def __init__(self, sentence) :
@@ -258,7 +240,7 @@ class AA_adjectives :
         if tag == name :
           self.words_adjectives.append((word, tag))
 
-  def judge(self) : # 判定
+  def judge(self, file) : # 判定
     for word, tag in self.words_adjectives :
       if (tag == 'JJS') or (tag == 'JJR') :
         self.gradable += 1
@@ -266,19 +248,25 @@ class AA_adjectives :
         self.non_gradable += 1
       else :
         self.gradable += 1
+    
+    result.append([self.gradable, self.non_gradable, file])
 
-  def result_print(self, file_path) : # 結果の出力
-    print("-------" + file_path + "------")
-    print('  gradable adjective   : ', self.gradable)
-    print('non-gradable adjective : ', self.non_gradable)
-    print()
+def result_print() :
+    for temp in result :
+        value = abs((temp[0] * 100 / (temp[0]+temp[1])) - (adamas_result[0] * 100 / (adamas_result[0] + adamas_result[1]))) + abs((temp[1] * 100 / (temp[0]+temp[1])) - (adamas_result[1] * 100 / (adamas_result[0] + adamas_result[1])))
+        if value < closest_file[0] :
+            closest_file[0] = value
+            closest_file[1] = temp[2]
+            
+    print('---File closest to "Dataset/Adamas.txt"---')
+    print('File name', closest_file[1])
+    print('Difference : ' + str(closest_file[0]) + ' %')
 
 def execution(sentence, file_path) : # 実行するメソッド
-  test = AA_adjectives(sentence)
-  test.get_tag()                             # 英単語にタグをつける
-  test.get_adjective()                       # 形容詞だけを抽出する
-  test.judge()                               # gradable, non-gradable の判断
-  test.result_print(file_path)                         # 結果を出力
+    test = AA_adjectives(sentence)
+    test.get_tag()                             # 英単語にタグをつける
+    test.get_adjective()                       # 形容詞だけを抽出する
+    test.judge(file_path)                               # gradable, non-gradable の判断
 
 def adjective(files, folder_path) :
   for file in files :
@@ -293,4 +281,6 @@ print('dataset1')
 adjective(files, folder_path)
 print('dataset2')
 adjective(files2, folder_path2)
+adamas_result = result.pop(len(result)-1)
+result_print()
 ################ ADJECTIVE ANALYSIS END ################
