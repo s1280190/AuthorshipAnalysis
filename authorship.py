@@ -205,11 +205,33 @@ for i in range(n_Files2):                               ## analyse the similarit
 
 ################ VERB ANALYSIS END ################
 
+import nltk
+import os
+import string
+import requests
+from collections import Counter
+from nltk import pos_tag, word_tokenize
+from nltk.tokenize import word_tokenize
+
+print('start')
+
+folder_path = "DataSet"  # フォルダのパスを指定してください
+folder_path2 = "Dataset2"  # 追加のデータセットフォルダのパスを指定してください
+# フォルダ内のファイルを取得
+files = os.listdir(folder_path)
+files2 = os.listdir(folder_path2)
+
+verb_counts = Counter()
+noun_counts = Counter()
+
+# 抽出する単語のリストを作成
+target_words = ["Adamas"]
+
 ################## ADJECTIVE ANALYSIS START ##################
 
 class AA_adjectives :
-  def __init__(self) :
-    self.words_all = [] # 全ての単語
+  def __init__(self, sentence) :
+    self.words_all = word_tokenize(sentence) # txtの文章を読み込む, 全ての単語
     self.words_adjectives = [] # 形容詞のみ
     self.gradable = 0 # gradable adjective
     self.non_gradable = 0 # non-gradable adjective
@@ -245,19 +267,18 @@ class AA_adjectives :
       else :
         self.gradable += 1
 
-  def result_print(self) : # 結果の出力
+  def result_print(self, file_path) : # 結果の出力
     print("-------" + file_path + "------")
     print('  gradable adjective   : ', self.gradable)
     print('non-gradable adjective : ', self.non_gradable)
     print()
 
-def execution(sentence) : # 実行するメソッド
-  test = AA_adjectives()
-  test.words_all = word_tokenize(sentence) # txtの文章を読み込む
+def execution(sentence, file_path) : # 実行するメソッド
+  test = AA_adjectives(sentence)
   test.get_tag()                             # 英単語にタグをつける
   test.get_adjective()                       # 形容詞だけを抽出する
   test.judge()                               # gradable, non-gradable の判断
-  test.result_print()                         # 結果を出力
+  test.result_print(file_path)                         # 結果を出力
 
 def adjective(files, folder_path) :
   for file in files :
@@ -265,9 +286,11 @@ def adjective(files, folder_path) :
       file_path = os.path.join(folder_path, file)
       f = open(file_path, 'r')
       input_txt = f.read()
-      execution(input_txt)
+      execution(input_txt, file_path)
 
 print()
+print('dataset1')
 adjective(files, folder_path)
+print('dataset2')
 adjective(files2, folder_path2)
 ################ ADJECTIVE ANALYSIS END ################
