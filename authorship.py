@@ -4,21 +4,24 @@ import requests
 import nltk
 from collections import Counter
 from nltk import pos_tag, word_tokenize
-from nltk.tokenize import word_tokenize¥
+from nltk.tokenize import word_tokenize
 import numpy as np
 
 
 folder_path = "DataSet"  # フォルダのパスを指定してください
-folder_path2 = "Dataset2"  # 追加のデータセットフォルダのパスを指定してください
+folder_path2 = "DataSet2"  # 追加のデータセットフォルダのパスを指定してください
 # フォルダ内のファイルを取得
 files = os.listdir(folder_path)
 files2 = os.listdir(folder_path2)
+
+n_Files = sum(file.endswith(".txt") for file in files)
+n_Files2 = sum(file.endswith(".txt") for file in files2)
 
 verb_counts = Counter()
 noun_counts = Counter()
 
 # 抽出する単語のリストを作成
-target_words = ["Adamas"]
+target_words = ["Adams"]
 
 
 def Type_rate(file_path):
@@ -27,10 +30,13 @@ def Type_rate(file_path):
         tokens = word_tokenize(file_contents)
         count_Type = Counter(tokens)
         count_Token = len(tokens)
-        print("Total Token", count_Token)
-        print("Total Type", len(count_Type))
-        print("Type-Token ratio", (len(count_Type) / count_Token))
-
+        if(file_path == os.path.join(folder_path2, file)):
+            print(file_path)
+            print("Total Token", count_Token)
+            print("Total Type", len(count_Type))
+            print("Type-Token ratio", (len(count_Type) / count_Token))
+            print()
+        return [(len(count_Type) / count_Token)]
 
 # ファイルごとに単語のカウントを行う
 for file in files:
@@ -91,13 +97,40 @@ if adamas_probability > 70:
     print("High Percent")
 else:
     print("Low Percent")
+print()
+
+type_rate_1 = [ 0 for i in range(n_Files) ]
+type_rate_1_name = [ "" for i in range(n_Files)]
+type_rate_2 = [ 0 for i in range(n_Files2) ]
+type_rate_2_name = [ "" for i in range(n_Files2)]
 
 # folder_path2内の各ファイルに対してType_rate()を実行
+i = 0
 for file in files2:
     if file.endswith(".txt"):
         file_path = os.path.join(folder_path2, file)
-        Type_rate(file_path)
+        type_rate_2_name[i] = file_path
+        type_rate_2[i] = Type_rate(file_path)
+        i += 1
 
+# folder_path内の各ファイルに対してType_rate()を実行
+i = 0
+for file in files:
+    if file.endswith(".txt"):
+        file_path = os.path.join(folder_path, file)
+        type_rate_1_name[i] = file_path
+        type_rate_1[i] = Type_rate(file_path)
+        i += 1
+
+
+for i in range(n_Files2):
+    rate_2 = np.array(type_rate_2[i])
+    for j in range(n_Files):
+        rate_1 = np.array(type_rate_1[j])
+        if abs(np.subtract(rate_2, rate_1)) < 0.005:
+            print(type_rate_1_name[j], ": ", rate_1)
+            print("\t" + type_rate_1_name[j] + " might be written by the same author as " + type_rate_2_name[i])
+    print()
 
 ################## VERB ANALYSIS ##################
 
@@ -159,8 +192,7 @@ def verb(files, folder_path, counts):
   return counts
 
 print()
-n_Files = sum(file.endswith(".txt") for file in files)
-n_Files2 = sum(file.endswith(".txt") for file in files2)
+
 counts = [ ["", 0, 0, 0] for i in range(n_Files) ]      
 ## [file number][File name, number of VBG, number of arranged future, number of planned future]
 counts2 = [ ["", 0, 0, 0] for i in range(n_Files2) ]
